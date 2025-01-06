@@ -217,3 +217,52 @@ export async function checkAllowance({
       throw error
     }
   }
+
+  export async function getUserPaymentRequests(owner: Address) {
+    try {
+      // Get total balance of owned NFTs
+      const balance = await paymentRequestsContract.read.balanceOf([owner])
+  
+      // If no NFTs, return early
+      if (balance === BigInt(0)) {
+        return {
+          total: 0,
+          requests: []
+        }
+      }
+  
+      // Get all payment requests for owner
+      const requests: Array<PaymentDetails & { tokenId: bigint }> = []
+      
+      for (let i = BigInt(0); i < balance; i = i + BigInt(1)) {
+        // Get tokenId for this index
+        const tokenId = await paymentRequestsContract.read.tokenOfOwnerByIndex([
+          owner,
+          i
+        ])
+  
+        // Get payment details for this tokenId
+        const details = await paymentRequestsContract.read.getPaymentDetails([
+          tokenId
+        ])
+  
+        requests.push({
+          ...details,
+          tokenId
+        })
+      }
+  
+      return {
+        total: Number(balance),
+        requests: requests.map(request => ({
+          ...request,
+          amount: request.amount.toString(),
+          tokenId: request.tokenId.toString()
+        }))
+      }
+  
+    } catch (error) {
+      console.error('Error fetching user payment requests:', error)
+      throw error
+    }
+  }
