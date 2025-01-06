@@ -3,20 +3,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { createPublicClient, http } from 'viem'
 import { base } from 'viem/chains'
 import { PaymentRequests } from '@/data/abi/paymentRequests'
-
-
-
-if (!process.env.NEXT_PUBLIC_PAYMENT_REQUESTS_ADDRESS) {
-    throw new Error('Missing NEXT_PUBLIC_PAYMENT_REQUESTS_ADDRESS environment variable')
-}
-
-export const PAYMENT_REQUESTS_ADDRESS = process.env.NEXT_PUBLIC_PAYMENT_REQUESTS_ADDRESS as `0x${string}`
-
-const client = createPublicClient({
-    chain: base,
-    transport: http()
-})
-
+import { paymentRequestsContract } from '@/data/paymentRequestsContract'
 export async function GET(request: NextRequest) {
     try {
         const searchParams = request.nextUrl.searchParams
@@ -31,14 +18,7 @@ export async function GET(request: NextRequest) {
                 { status: 400 }
             )
         }
-
-        const paymentDetails = await client.readContract({
-            address: PAYMENT_REQUESTS_ADDRESS,
-            abi: PaymentRequests,
-            functionName: 'getPaymentDetails',
-            args: [BigInt(tokenId)]
-        })
-
+        const paymentDetails = await paymentRequestsContract.read.getPaymentDetails([BigInt(tokenId)])
         return NextResponse.json({ paymentDetails }, { status: 200 })
     } catch (error) {
         console.error(error)
