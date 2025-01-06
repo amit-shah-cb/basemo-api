@@ -1,8 +1,5 @@
 import '@/lib/bigint'  
 import { NextResponse, NextRequest } from 'next/server';
-import { createPublicClient, http } from 'viem'
-import { base } from 'viem/chains'
-import { PaymentRequests } from '@/data/abi/paymentRequests'
 import { paymentRequestsContract } from '@/data/paymentRequestsContract'
 
 export async function GET(request: NextRequest) {
