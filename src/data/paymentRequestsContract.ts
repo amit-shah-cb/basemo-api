@@ -1,4 +1,4 @@
-import { createPublicClient, http, getContract } from 'viem'
+import { createPublicClient, http, getContract, Address, encodeFunctionData } from 'viem'
 import { base } from 'viem/chains'
 import { PaymentRequests } from '@/data/abi/paymentRequests'
 
@@ -25,3 +25,24 @@ export const paymentRequestsContract = getContract({
   abi: PaymentRequests,
   client: publicClient,
 })
+
+export function getCreatePaymentRequestData({
+    token,
+    payee,
+    amount,
+    description
+  }: {
+    token: Address,
+    payee: Address,
+    amount: bigint,
+    description: string
+  }) {
+    return {
+      address: PAYMENT_REQUESTS_ADDRESS,
+      data: encodeFunctionData({
+        abi: PaymentRequests,
+        functionName: 'createPaymentRequest',
+        args: [token, payee, amount, description]
+      })
+    }
+  }
