@@ -1,6 +1,6 @@
 import '@/lib/bigint'
 import { NextRequest, NextResponse } from 'next/server'
-import { getSettleTransactions, checkAllowance } from '@/data/paymentRequestsContract'
+import { getSettleTransactions } from '@/data/paymentRequestsContract'
 import { type Address, isAddress } from 'viem'
 
 type SettlePaymentRequestBody = {

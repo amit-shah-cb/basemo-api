@@ -9,11 +9,6 @@ if (!process.env.NEXT_PUBLIC_PAYMENT_REQUESTS_ADDRESS) {
 
 export const PAYMENT_REQUESTS_ADDRESS = process.env.NEXT_PUBLIC_PAYMENT_REQUESTS_ADDRESS as `0x${string}`
 
-const client = createPublicClient({
-    chain: base,
-    transport: http()
-})
-
 // Create the public client
 export const publicClient = createPublicClient({
   chain: base,
