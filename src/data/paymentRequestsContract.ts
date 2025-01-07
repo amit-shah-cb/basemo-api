@@ -2,6 +2,9 @@ import { createPublicClient, http, getContract, Address, encodeFunctionData } fr
 import { base } from 'viem/chains'
 import { PaymentRequests } from '@/data/abi/paymentRequests'
 import { Erc20 } from '@/data/abi/erc20'
+import { decodeEventLog } from 'viem'
+import { Hex } from 'viem'
+
 
 if (!process.env.NEXT_PUBLIC_PAYMENT_REQUESTS_ADDRESS) {
     throw new Error('Missing NEXT_PUBLIC_PAYMENT_REQUESTS_ADDRESS environment variable')
@@ -265,4 +268,69 @@ export async function checkAllowance({
       console.error('Error fetching user payment requests:', error)
       throw error
     }
+  }
+
+export async function getPaymentDetails(tokenId: bigint | string) {
+    try {
+      // Convert string tokenId to bigint if needed
+      const validatedTokenId = typeof tokenId === 'string' ? BigInt(tokenId) : tokenId
+  
+      // Get payment details
+      const details = await paymentRequestsContract.read.getPaymentDetails([
+        validatedTokenId
+      ])
+  
+      return {
+        ...details,
+        amount: details.amount.toString(), // Convert BigInt to string for JSON
+        tokenId: validatedTokenId.toString() // Include tokenId in response
+      }
+  
+    } catch (error) {
+      console.error('Error fetching payment details:', error)
+      throw error
+    }
+  }
+  
+
+  export type DecodedLog = {
+    eventName: string
+    args: Record<string, any>
+  }
+
+  export type PaymentRequestCreatedEvent = {
+    eventName: 'PaymentRequestCreated'
+    args: {
+      tokenId: bigint
+      receiver: `0x${string}`
+      payee: `0x${string}`
+      amount: bigint
+      publicMemo: string
+    }
+  }
+  
+  export async function decodeLogs(logs: {data: `0x${string}`, topics: [signature: Hex, ...args: Hex[]] | [] }[]): Promise<DecodedLog[]> {
+    return logs.map(log => {
+      try {
+        const decoded = decodeEventLog({
+          abi: PaymentRequests,
+          data: log.data,
+          topics: log.topics
+        })
+  
+        return {
+          eventName: decoded.eventName,
+          args: decoded.args
+        }
+      } catch (error) {
+        console.warn('Failed to decode log:', error)
+        return {
+          eventName: 'UnknownEvent',
+          args: {
+            data: log.data,
+            topics: log.topics
+          }
+        }
+      }
+    })
   }
