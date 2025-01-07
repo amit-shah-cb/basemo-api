@@ -295,7 +295,8 @@ export async function getPaymentDetails(tokenId: bigint | string) {
 
   export type DecodedLog = {
     eventName: string
-    args: Record<string, any>
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      args: Record<string, any>
   }
 
   export type PaymentRequestCreatedEvent = {

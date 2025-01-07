@@ -7,7 +7,7 @@ const ALCHEMY_URL = `https://base-mainnet.g.alchemy.com/v2/${process.env.NEXT_PR
 
 export type Log = {
     address: `0x${string}`
-    topics: `0x${string}`[]
+    topics: `0x${string}`[] | []
     data: `0x${string}`
     blockHash: `0x${string}`
     blockNumber: `0x${string}`
