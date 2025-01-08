@@ -1,7 +1,7 @@
 import '@/lib/bigint'
 import { NextRequest, NextResponse } from 'next/server'
 import { getCreatePaymentRequestData } from '@/data/paymentRequestsContract'
-import { parseEther, type Address, isAddress } from 'viem'
+import { type Address, isAddress } from 'viem'
 
 type CreatePaymentRequestBody = {
   token: string
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
       const txData = getCreatePaymentRequestData({
         token: validatedToken,
         payee: validatedPayee,
-        amount: parseEther(validatedAmount),
+        amount: BigInt(validatedAmount),
         description: sanitizedDescription
       })
 
